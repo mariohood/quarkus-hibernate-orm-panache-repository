@@ -9,6 +9,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -29,7 +30,7 @@ public class MovieResource {
 
 
     @GET
-    public Response getAll () {
+    public Response getAll() {
         List<Movie> movies = movieRepository.listAll();
         return Response.ok(movies).build();
     }
@@ -45,7 +46,8 @@ public class MovieResource {
     @GET
     @Path("/title/{title}")
     public Response getByTitle(@PathParam("title") String title) {
-        return movieRepository.find("title", title)
+        return movieRepository
+            .find("title", title)
             .singleResultOptional()
             .map (movie -> Response.ok(movie).build())
             .orElse(Response.status(NOT_FOUND).build());
@@ -67,6 +69,21 @@ public class MovieResource {
         }
         return Response.status(Status.BAD_REQUEST).build();
     }
+
+    @PUT
+    @Path("{id}")
+    @Transactional
+    public Response updateById(@PathParam("id") Long id, Movie movie) {
+        return movieRepository
+        .findByIdOptional(id)
+        .map(
+            m -> {
+                m.setTitle(movie.getTitle());
+                return Response.ok(m).build();
+            })
+        .orElse(Response.status(NOT_FOUND).build());
+    }
+
 
     @DELETE
     @Path("{id}")
