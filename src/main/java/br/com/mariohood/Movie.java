@@ -18,7 +18,6 @@ public class Movie {
     @Column(length = 200)
     private String description;
 
-
     private String director;
 
     private String country;
